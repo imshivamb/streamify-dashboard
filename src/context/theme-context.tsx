@@ -34,7 +34,7 @@ const ThemecontextProvider = ({ children }: ThemeContextProviderProps) => {
     const localTheme = window.localStorage.getItem("theme") as Theme | null;
 
     if (localTheme) {
-      setTheme(localTheme);
+      // setTheme(localTheme);
 
       if (localTheme === "dark") {
         document.documentElement.classList.add("dark");
