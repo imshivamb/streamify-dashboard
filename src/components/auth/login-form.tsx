@@ -10,13 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loginSchema, LoginFormData } from "@/lib/schema";
 import Link from "next/link";
-import { Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const LoginForm = () => {
   const router = useRouter();
-  const toast = useToast();
-  const setUser = useStore((state) => state.setUser);
+  const { toast } = useToast();
+  const login = useStore((state) => state.login);
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -29,18 +28,15 @@ const LoginForm = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const response = await fetch("/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        const { user } = await response.json();
-        setUser(user);
+      const result = await login(data.email, data.password);
+      if (result.success) {
+        toast({
+          title: "Login Successful",
+          description: "Welcome back to Streamify!",
+        });
         router.push("/dashboard");
       } else {
-        setError("Invalid credentials");
+        setError(result.message);
       }
     } catch (err) {
       setError("An error occurred. Please try again.");
@@ -48,7 +44,7 @@ const LoginForm = () => {
   };
 
   return (
-    <Card className=" w-full px-5 md:w-[450px]">
+    <Card className="w-full px-5 md:w-[450px]">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           Login to Streamify{" "}
@@ -83,7 +79,7 @@ const LoginForm = () => {
         </form>
       </CardContent>
       <p className="w-full text-center mb-5 text-sm font-medium tracing-tight">
-        Dont have an account?{" "}
+        Don&apos;t have an account?{" "}
         <Link href="/register" className="font-semibold text-orange-500">
           Register Now
         </Link>

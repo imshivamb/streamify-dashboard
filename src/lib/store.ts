@@ -4,10 +4,13 @@ import { User, Metrics, UserGrowth, RevenueDistribution, TopStreamedSong, Recent
 
 interface AuthStore {
   user: User | null;
+  users: User[];  // Add this to store all users
   isAuthenticated: boolean;
   setUser: (user: User | null) => void;
-  setIsAuthenticated: (isAuthenticated: boolean) => void;  // Add this line
+  setIsAuthenticated: (isAuthenticated: boolean) => void;
   logout: () => void;
+  register: (email: string, password: string, name: string) => Promise<{ success: boolean; message: string }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
 }
 
 interface DashboardStore {
@@ -25,15 +28,41 @@ interface DashboardStore {
 
 type Store = AuthStore & DashboardStore;
 
+const initialTestUser: User = {
+  id: '1',
+  email: 'user@example.com',
+  password: 'password',
+  name: 'Test User'
+};
+
 export const useStore = create<Store>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       // Auth state
       user: null,
+      users: [initialTestUser], 
       isAuthenticated: false,
       setUser: (user) => set({ user, isAuthenticated: !!user }),
-      setIsAuthenticated: (isAuthenticated) => set({ isAuthenticated }),  // Add this line
+      setIsAuthenticated: (isAuthenticated) => set({ isAuthenticated }),
       logout: () => set({ user: null, isAuthenticated: false }),
+      register: async (email, password, name) => {
+        const users = get().users;
+        if (users.some(u => u.email === email)) {
+          return { success: false, message: 'User already exists' };
+        }
+        const newUser = { id: String(users.length + 1), email, password, name };
+        set(state => ({ users: [...state.users, newUser] }));
+        set({ user: newUser, isAuthenticated: true });
+        return { success: true, message: 'User registered successfully' };
+      },
+      login: async (email, password) => {
+        const user = get().users.find(u => u.email === email && u.password === password);
+        if (user) {
+          set({ user, isAuthenticated: true });
+          return { success: true, message: 'Login successful' };
+        }
+        return { success: false, message: 'Invalid credentials' };
+      },
 
       // Dashboard state
       metrics: null,
@@ -50,7 +79,11 @@ export const useStore = create<Store>()(
     {
       name: 'streamify-storage',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
+      partialize: (state) => ({ 
+        user: state.user, 
+        users: state.users,  // Include users in persisted state
+        isAuthenticated: state.isAuthenticated 
+      }),
     }
   )
 )

@@ -19,10 +19,10 @@ import { Input } from "../ui/input";
 const RegisterForm = () => {
   const router = useRouter();
   const { toast } = useToast();
-  const { setUser, setIsAuthenticated } = useStore();
+  const register = useStore((state) => state.register);
 
   const {
-    register,
+    register: registerField,
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterFormData>({
@@ -30,23 +30,18 @@ const RegisterForm = () => {
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    const response = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-
-    if (response.ok) {
-      const { user } = await response.json();
-      setUser(user);
-      setIsAuthenticated(true);
+    const result = await register(data.email, data.password, data.name);
+    if (result.success) {
       toast({
         title: "Registered Successfully!!",
+        description: "Welcome to Streamify!",
       });
       router.push("/dashboard");
     } else {
       toast({
         title: "Registration Failed",
+        description: result.message,
+        variant: "destructive",
       });
     }
   };
@@ -57,20 +52,24 @@ const RegisterForm = () => {
         <CardTitle className="lg:text-lg font-semibold text-gray-800 dark:text-gray-50">
           Register
         </CardTitle>
-        <CardDescription className=" dark:text-gray-100">
+        <CardDescription className="dark:text-gray-100">
           Create your account on Streamify
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <Input placeholder="Name" {...register("name")} />
+            <Input placeholder="Name" {...registerField("name")} />
             {errors.name && (
               <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
             )}
           </div>
           <div>
-            <Input type="email" placeholder="Email" {...register("email")} />
+            <Input
+              type="email"
+              placeholder="Email"
+              {...registerField("email")}
+            />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.email.message}
@@ -81,7 +80,7 @@ const RegisterForm = () => {
             <Input
               type="password"
               placeholder="Password"
-              {...register("password")}
+              {...registerField("password")}
             />
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">
@@ -93,7 +92,7 @@ const RegisterForm = () => {
             <Input
               type="password"
               placeholder="Confirm Password"
-              {...register("confirmPassword")}
+              {...registerField("confirmPassword")}
             />
             {errors.confirmPassword && (
               <p className="text-red-500 text-sm mt-1">
