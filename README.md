@@ -33,7 +33,7 @@ Streamify Dashboard is a Next.js application that provides analytics and insight
 
 2. Install dependencies:
    ```
-   cd streamify-dashboard
+   cd streamify
    npm install
    ```
 
