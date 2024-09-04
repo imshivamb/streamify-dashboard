@@ -48,7 +48,7 @@ const LoginForm = () => {
   };
 
   return (
-    <Card className="w-[450px]">
+    <Card className=" w-full px-5 md:w-[450px]">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           Login to Streamify{" "}

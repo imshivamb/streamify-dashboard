@@ -52,7 +52,7 @@ const RegisterForm = () => {
   };
 
   return (
-    <Card className="w-[450px]">
+    <Card className="w-full px-5 md:w-[450px]">
       <CardHeader>
         <CardTitle className="lg:text-lg font-semibold text-gray-800 dark:text-gray-50">
           Register
