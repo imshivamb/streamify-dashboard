@@ -1,14 +1,9 @@
+import { User } from '@/types';
 import fs from 'fs';
 import path from 'path';
 
 const filePath = path.join(process.cwd(), 'src', 'data', 'users.json');
 
-export interface User {
-  id: string;
-  email: string;
-  password: string;
-  name: string;
-}
 
 export function getUsers(): User[] {
   const fileContents = fs.readFileSync(filePath, 'utf8');
