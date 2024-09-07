@@ -4,7 +4,7 @@ import { User, Metrics, UserGrowth, RevenueDistribution, TopStreamedSong, Recent
 
 interface AuthStore {
   user: User | null;
-  users: User[];  // Add this to store all users
+  users: User[]; 
   isAuthenticated: boolean;
   setUser: (user: User | null) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;

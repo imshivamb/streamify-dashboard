@@ -31,25 +31,48 @@ describe("KeyMetrics", () => {
     ).mockResolvedValue(mockMetrics);
   });
 
-  it("renders loading state initially", () => {
-    render(<KeyMetrics />);
-    expect(screen.getByText("Loading metrics...")).toBeInTheDocument();
-  });
-
   it("renders metrics after loading", async () => {
     render(<KeyMetrics />);
 
+    // Wait for the metrics to be loaded and rendered
     await waitFor(() => {
       expect(screen.getByText("Total Users")).toBeInTheDocument();
-      expect(screen.getByText("1,000,000")).toBeInTheDocument();
-      expect(screen.getByText("Active Users")).toBeInTheDocument();
-      expect(screen.getByText("750,000")).toBeInTheDocument();
-      expect(screen.getByText("Total Streams")).toBeInTheDocument();
-      expect(screen.getByText("5,000,000")).toBeInTheDocument();
-      expect(screen.getByText("Revenue")).toBeInTheDocument();
-      expect(screen.getByText("$10,000,000")).toBeInTheDocument();
-      // Add a check for topArtist if it's displayed in the KeyMetrics component
-      // expect(screen.getByText('Taylor Swift')).toBeInTheDocument()
     });
+
+    // Check if all metrics are rendered correctly
+    expect(screen.getByText("1,000,000")).toBeInTheDocument();
+    expect(screen.getByText("Active Users")).toBeInTheDocument();
+    expect(screen.getByText("750,000")).toBeInTheDocument();
+    expect(screen.getByText("Total Streams")).toBeInTheDocument();
+    expect(screen.getByText("5,000,000")).toBeInTheDocument();
+    expect(screen.getByText("Revenue")).toBeInTheDocument();
+    expect(screen.getByText("$10,000,000")).toBeInTheDocument();
+
+    // Check for the trend indicators
+    expect(screen.getByText("+0.54")).toBeInTheDocument();
+    expect(screen.getByText("+7.68")).toBeInTheDocument();
+    expect(screen.getByText("+6.03")).toBeInTheDocument();
+    expect(screen.getByText("+0.14")).toBeInTheDocument();
+  });
+
+  it("renders correctly when metrics are null", () => {
+    mockedUseStore.mockReturnValue({
+      metrics: null,
+      setMetrics: jest.fn(),
+    } as any);
+
+    render(<KeyMetrics />);
+
+    // Check if all metric titles are rendered
+    expect(screen.getByText("Total Users")).toBeInTheDocument();
+    expect(screen.getByText("Active Users")).toBeInTheDocument();
+    expect(screen.getByText("Total Streams")).toBeInTheDocument();
+    expect(screen.getByText("Revenue")).toBeInTheDocument();
+
+    // Check if trend indicators are still present
+    expect(screen.getByText("+0.54")).toBeInTheDocument();
+    expect(screen.getByText("+7.68")).toBeInTheDocument();
+    expect(screen.getByText("+6.03")).toBeInTheDocument();
+    expect(screen.getByText("+0.14")).toBeInTheDocument();
   });
 });

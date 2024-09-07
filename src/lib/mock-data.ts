@@ -1,4 +1,5 @@
 import { addDays, subMonths, format } from 'date-fns';
+import { Metrics, UserGrowth, RevenueDistribution, RecentStream, TopStreamedSong } from '@/types';
 
 const randomNumber = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1) + min);
 
@@ -8,38 +9,6 @@ const randomDate = () => {
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 };
 
-export interface Metrics {
-  totalUsers: number;
-  activeUsers: number;
-  totalStreams: number;
-  revenue: number;
-  topArtist: string;
-}
-
-export interface UserGrowth {
-  date: string;
-  totalUsers: number;
-  activeUsers: number;
-}
-
-export interface RevenueDistribution {
-  source: string;
-  amount: number;
-}
-
-export interface TopStreamedSong {
-  title: string;
-  artist: string;
-  streams: number;
-}
-
-export interface RecentStream {
-  songName: string;
-  artist: string;
-  dateStreamed: string;
-  streamCount: number;
-  userId: string;
-}
 
 const artists = [
   'Adele', 'Drake', 'Sia', 'Eminem', 'Rihanna', 'BTS', 'Dua Lipa', 'Arijit Singh',
