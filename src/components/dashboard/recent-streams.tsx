@@ -34,6 +34,8 @@ export function RecentStreamsTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [minStreamCount, setMinStreamCount] = useState("");
+  const [appliedMinStreamCount, setAppliedMinStreamCount] = useState(0);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -53,12 +55,28 @@ export function RecentStreamsTable() {
     }
   };
 
-  const filteredStreams = recentStreams.filter(
-    (stream) =>
-      stream.songName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      stream.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      stream.userId.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleSearchChange = (e: any) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleApplyFilter = () => {
+    const parsedCount = parseInt(minStreamCount, 10);
+    setAppliedMinStreamCount(isNaN(parsedCount) ? 0 : parsedCount);
+    setCurrentPage(1);
+  };
+
+  const filteredStreams = recentStreams.filter((stream) => {
+    const matchesSearch = searchTerm
+      ? stream.songName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        stream.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        stream.userId.toLowerCase().includes(searchTerm.toLowerCase())
+      : true;
+
+    const meetsMinCount = stream.streamCount >= appliedMinStreamCount;
+
+    return matchesSearch && meetsMinCount;
+  });
 
   const sortedStreams = [...filteredStreams].sort((a, b) => {
     if (!sortColumn) return 0;
@@ -86,12 +104,20 @@ export function RecentStreamsTable() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="mb-4">
+        <div className="mb-4 flex gap-4 items-center">
           <Input
             placeholder="Search by song, artist, or user ID"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
           />
+          <Input
+            type="number"
+            className="w-48"
+            placeholder="Min stream count"
+            value={minStreamCount}
+            onChange={(e) => setMinStreamCount(e.target.value)}
+          />
+          <Button onClick={handleApplyFilter}>Apply Filter</Button>
         </div>
         <Table>
           <TableHeader>

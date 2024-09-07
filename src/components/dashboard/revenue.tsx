@@ -83,8 +83,8 @@ export function RevenueDistributionChart() {
     fill: chartConfig[item.source].color,
   }));
 
-  // Calculate the trend (you may need to adjust this based on your actual data)
-  const previousTotalRevenue = totalRevenue * 0.95; // Assuming 5% growth for this example
+  
+  const previousTotalRevenue = totalRevenue * 0.95;
   const trend =
     ((totalRevenue - previousTotalRevenue) / previousTotalRevenue) * 100;
 
